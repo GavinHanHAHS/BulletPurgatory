@@ -1,0 +1,16 @@
+canvas {
+  border: 1px solid black;
+}
+
+div#main {
+  width: 800px;
+  margin: auto;
+
+  display: flex;
+  justify-content: center;
+}
+
+body {
+  text-align: center;
+  font-family: "Comic Sans MS", sans-serif;
+}
