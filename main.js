@@ -24,16 +24,12 @@ for(let i = 0; i < 9; i++) {
   bullets.push([50 * (i + 1), 50, 5, 0, 0, 3]);
 }
 
+
 setTimeout(() => setBulletDirection(), 1000);
 setInterval(() => {
 //  for(let i = 0; i < 4; i++) {
-  let angle = Math.atan2(player.y - 150, player.x - 150)
-  console.log(angle);
-  
-  addBullet(150, 150, 5, player, 3);
-  // setTimeout(() => addBullet(150, 150, 5, angle, 3), 100);
-  // setTimeout(() => addBullet(150, 150, 5, angle, 3), 200);
-  // setTimeout(() => addBullet(150, 150, 5, angle, 3), 300);
+  addMultipleBullets(150, 150);
+  addMultipleBullets(450, 150);
 //  }
 }, 1500);
 
@@ -130,7 +126,6 @@ function setBulletDirection() {
 }
 
 function addBullet(x, y, r, angle, spd) {
-  console.log(angle);
   let xAngle = 0;
   let yAngle = 0;
   if(angle == player) {
@@ -140,12 +135,16 @@ function addBullet(x, y, r, angle, spd) {
     xAngle = Math.cos(toRadians(angle));
     yAngle = Math.sin(toRadians(angle));
   }
-  console.log(xAngle + ", " + yAngle);
   bullets.push([x, y, r, xAngle, yAngle, spd]);
 }
 
 function addMultipleBullets(x, y) {
+  let angle = toDegrees(Math.atan2(player.y - y, player.x - x));
   
+  addBullet(x, y, 5, angle, 3);
+  setTimeout(() => addBullet(x, y, 5, angle, 3), 100);
+  setTimeout(() => addBullet(x, y, 5, angle, 3), 200);
+  setTimeout(() => addBullet(x, y, 5, angle, 3), 300);
 }
 
 // Math Helper Functions
