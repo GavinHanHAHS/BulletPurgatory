@@ -18,20 +18,26 @@ let player = {
 // Bullet array
 let bullets = [];
 
-for(let i = 0; i < 9; i++) {
-//  addBullet((i * 50) + 50, 50, 5, player, 3);
+// for(let i = 0; i < 9; i++) {
+// //  addBullet((i * 50) + 50, 50, 5, player, 3);
   
-  bullets.push([50 * (i + 1), 50, 5, 0, 0, 3]);
-}
+//   bullets.push([50 * (i + 1), 50, 5, 0, 0, 3]);
+// }
 
 
-setTimeout(() => setBulletDirection(), 1000);
+//setTimeout(() => setBulletDirection(), 1000);
+// setInterval(() => {
+// //  for(let i = 0; i < 4; i++) {
+//   addMultipleBullets(150, 150, 4);
+//   addMultipleBullets(350, 150, 4);
+// //  }
+// }, 1500);
+
+setInterval(spirals, 3650);
 setInterval(() => {
-//  for(let i = 0; i < 4; i++) {
-  addMultipleBullets(150, 150);
-  addMultipleBullets(450, 150);
-//  }
-}, 1500);
+  addMultipleBullets(250, 150, 7);
+}, 4000);
+
 
 let keys = [];
 
@@ -45,6 +51,8 @@ function main() {
   playerMovement();
   
   bulletLogic();
+
+  collision();
 
   requestAnimationFrame(main);
 }
@@ -106,12 +114,19 @@ function bulletLogic() {
     } else if(bullets[i][0] > cnv.width + 5) {
       bullets.splice(i, 1);
       i--;
+    } else if(bullets[i][0] < 0) {
+      bullets.splice(i, 1);
+      i--;
+    } else if(bullets[i][1] < 0) {
+      bullets.splice(i, 1);
+      i--;
     }
   }
 
   // Draw basic enemy
-  fillCircle(150, 150, 10);
   strokeCircle(150, 150, 10);
+
+  strokeCircle(350, 150, 10);
 
   
 }
@@ -138,13 +153,84 @@ function addBullet(x, y, r, angle, spd) {
   bullets.push([x, y, r, xAngle, yAngle, spd]);
 }
 
-function addMultipleBullets(x, y) {
+function addMultipleBullets(x, y, num) {
   let angle = toDegrees(Math.atan2(player.y - y, player.x - x));
   
-  addBullet(x, y, 5, angle, 3);
+  for(let i = 0; i < num; i++) {
+    setTimeout(() => addBullet(x, y, 15, angle, 3), i * 100);
+  }
+  
+/*  addBullet(x, y, 5, angle, 3);
   setTimeout(() => addBullet(x, y, 5, angle, 3), 100);
   setTimeout(() => addBullet(x, y, 5, angle, 3), 200);
-  setTimeout(() => addBullet(x, y, 5, angle, 3), 300);
+  setTimeout(() => addBullet(x, y, 5, angle, 3), 300);*/
+}
+
+function collision() {
+  for(let i = 0; i < bullets.length; i++) {
+    // check distance between bullet and player
+    let a = player.y - bullets[i][1];
+    let b = player.x - bullets[i][0];
+    let c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)); // c = distance between bullet & player
+
+    // check if distance > player radius + bullet radius
+    if(c < bullets[i][2]) {
+      // delete bullet if true
+      bullets.splice(i, 1);
+      i--;
+      // console.log / damage player.
+      console.log("HIT!");
+      // document.body.style.backgroundColor = "red";
+      // setTimeout(() => document.body.style.backgroundColor = "", 20)
+
+    }
+
+      
+  }
+}
+
+function spirals() {
+  // spirally thingies
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(350, 150, 7, i, 4), i * 10);
+  }
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(350, 150, 7, 90 + i, 4), i * 10);
+  }
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(350, 150, 7,  180 + i, 4), i * 10);
+  }
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(350, 150, 7, 270 + i, 4), i * 10);
+  }
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(150, 150, 7, i, 4), i * 10);
+  }
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(150, 150, 7, 90 + i, 4), i * 10);
+  }
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(150, 150, 7,  180 + i, 4), i * 10);
+  }
+  for(let i = 0; i < 360; i += 5) {
+    setTimeout(() => addBullet(150, 150, 7, 270 + i, 4), i * 10);
+  }
+  //circular thing
+  for(let i = 0; i < 45; i += 5) {
+    setTimeout(() => {
+      for(let i = 0; i < 360; i += 14) {
+        addBullet(250, 150, 5, i, 3);
+      }
+    }, i * 80); 
+  }
+
+  for(let i = 0; i < 45; i += 5) {
+    setTimeout(() => {
+      for(let i = 0; i < 360; i += 14) {
+        addBullet(250, 150, 10, i + 7, 3);
+      }
+    }, (i * 80) + 180); 
+  }
 }
 
 // Math Helper Functions
