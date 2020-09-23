@@ -12,7 +12,10 @@ let player = {
   y: 350,
   r: 15,
   speed: 5,
-  xSpd: 0
+  xSpd: 0,
+  lives: 3,
+  score: 0,
+  invincible: false
 }
 
 // Bullet array
@@ -55,6 +58,23 @@ function main() {
 
   collision();
   
+  if(stage == 0) {
+    stage = -1;
+    if(Math.random() > 0.5) {
+      stage = 1;
+    } else {
+      stage = 2;
+    }
+    console.log("stage change");
+  }
+
+  if(player.lives > 0) {
+    player.score += 1;
+    document.getElementById("score").innerHTML = player.score;
+  }
+  
+
+
   // if(stage == 0) {
   //   stage = -1;
   //   let rand = Math.random();
@@ -75,7 +95,7 @@ function main() {
 
 function playerMovement() {
   // Logic
-
+  
 
   // Movement
   if(keys.includes("ShiftLeft")) { // If player hits lShift then slow down player
@@ -104,13 +124,25 @@ function playerMovement() {
 
 
   // Draw a player
-  ctx.fillStyle = "#ffb7c5";
-  fillCircle(player.x, player.y, player.r);
-  strokeCircle(player.x, player.y, player.r);
-  if(keys.includes("ShiftLeft")) {
-    ctx.fillStyle = "white";
-    fillCircle(player.x, player.y, 3);
-  }  
+  if(!player.invincible) {
+    ctx.fillStyle = "#ffb7c5";
+    fillCircle(player.x, player.y, player.r);
+    strokeCircle(player.x, player.y, player.r);
+    if(keys.includes("ShiftLeft")) {
+      ctx.fillStyle = "white";
+      fillCircle(player.x, player.y, 3);
+    }  
+  } else {
+    if(Date.now() % 2 == 0) {
+      ctx.fillStyle = "#ffb7c5";
+      fillCircle(player.x, player.y, player.r);
+      strokeCircle(player.x, player.y, player.r);
+      if(keys.includes("ShiftLeft")) {
+        ctx.fillStyle = "white";
+        fillCircle(player.x, player.y, 3);
+      }  
+    }
+  }
 }
 
 function bulletLogic() {
@@ -196,7 +228,14 @@ function collision() {
       bullets.splice(i, 1);
       i--;
       // console.log / damage player.
-      console.log("HIT!");
+      if(!player.invincible) {
+        console.log("HIT!");
+        player.lives -= 1;
+        player.lives = constrain(0, 5, player.lives);
+        document.getElementById("lives").innerHTML = player.lives;
+        player.invincible = true;
+        setTimeout(() => {player.invincible = false}, 1600);
+      }
       // document.body.style.backgroundColor = "red";
       // setTimeout(() => document.body.style.backgroundColor = "", 20)
 
@@ -209,7 +248,7 @@ function collision() {
 function spirals() {
   if(stage == 1) {
     stage = -1;
-//    setTimeout(() => stage = 0, 3650); // change stage = 0 after stage finishes
+    setTimeout(() => stage = 0, 4750); // change stage = 0 after stage finishes (normally 3650);
     // spirally thingies
     for(let i = 0; i < 360; i += 10) {
       setTimeout(() => addBullet(300, 100, 6, i, 3, "n"), i * 10);
@@ -262,20 +301,20 @@ function homeCircles() {
       setTimeout(() => {
         // one loop
         for(let n = 0; n <= 360; n += 30) { // add two circles of homing bullets
-          addBullet(100, 100, 5, n, 1.5, "h");
+          addBullet(100, 100, 5, n, 1.25, "h");
         }
         for(let n = 0; n <= 360; n += 30) {
-          addBullet(300, 100, 5, n, 1.5, "h");
+          addBullet(300, 100, 5, n, 1.25, "h");
         }
 
-        for(let i = 0; i < 15; i++) { // add random bullet fall
-          setTimeout(() => addBullet(Math.random() * cnv.width, 5, 5, 90, Math.random() * 3 + 2, "n"), i * 40);
+        for(let i = 0; i < 10; i++) { // add random bullet fall
+          setTimeout(() => addBullet(Math.random() * cnv.width, 5, 5, 90, Math.random() * 2 + 1, "n"), i * 120);
         }
         
-        setTimeout(() => hTrack(6.5, true), 750); // set circles to track after x seconds
+        setTimeout(() => hTrack(5.5, true), 750); // set circles to track after x seconds
       }, f * 1050)
     }
-    setTimeout(() => {stage = 2}, 5250); // reset stage
+    setTimeout(() => {stage = 0}, 6750); // reset stage (normal length = 5250)
   }
 }
 
