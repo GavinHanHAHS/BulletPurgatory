@@ -8,7 +8,7 @@ cnv.height = 600;
 
 // Player Object
 let player = {
-  x: 250,
+  x: 200,
   y: 350,
   r: 15,
   speed: 5,
@@ -20,6 +20,7 @@ let player = {
 
 // Bullet array
 let bullets = [];
+
 
 // for(let i = 0; i < 9; i++) {
 // //  addBullet((i * 50) + 50, 50, 5, player, 3);
@@ -43,8 +44,9 @@ let bullets = [];
 
 
 let keys = [];
-let stage = 2;
+let stage = 3;
 
+let x1 = 0;
 
 requestAnimationFrame(main);
 
@@ -74,7 +76,6 @@ function main() {
   }
   
 
-
   // if(stage == 0) {
   //   stage = -1;
   //   let rand = Math.random();
@@ -87,6 +88,7 @@ function main() {
 
   spirals();
   homeCircles();
+  carousel();
 
   requestAnimationFrame(main);
 }
@@ -249,6 +251,7 @@ function spirals() {
   if(stage == 1) {
     stage = -1;
     setTimeout(() => stage = 0, 4750); // change stage = 0 after stage finishes (normally 3650);
+
     // spirally thingies
     for(let i = 0; i < 360; i += 10) {
       setTimeout(() => addBullet(300, 100, 6, i, 3, "n"), i * 10);
@@ -297,6 +300,8 @@ function spirals() {
 function homeCircles() {
   if(stage == 2) {
     stage = -1;
+    setTimeout(() => {stage = 0}, 7250); // reset stage (normal length = 5250)
+
     for(let f = 0; f < 5; f++) {
       setTimeout(() => {
         // one loop
@@ -314,9 +319,46 @@ function homeCircles() {
         setTimeout(() => hTrack(5.5, true), 750); // set circles to track after x seconds
       }, f * 1050)
     }
-    setTimeout(() => {stage = 0}, 6750); // reset stage (normal length = 5250)
   }
 }
+
+function carousel() {
+  if(stage == 3) {
+    stage = -1;
+    let x1 = 0;
+    setTimeout(() => {stage = 3.5; console.log("right");}, 7000); //reset stage (goes backwards a bit)
+
+
+    for(let y = 0; y < 70; y += 3) {
+      setTimeout(() => {
+        for(let i = 0; i <= 360; i+= 51) { // one circle of bullet
+          for(let n = 0; n <= 7; n++) {
+            setTimeout(() => {addBullet(200, 100, 5, 90 - i + y, 4 - (n / 4), "n")}, n * 80);
+          }
+        }
+      }, y * 100);
+    }
+
+    for(let i = 0; i < 400; i += 5) {
+      setTimeout(() => addBullet(i, 150, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 8);
+      setTimeout(() => addBullet(400 - i, 150, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 8);
+    }
+  }
+  if(stage == 3.5) {
+    stage = -1;
+    setTimeout(() => {stage = 3; console.log("left");}, 7000);
+    for(let y = 0; y < 70; y += 3) {
+      setTimeout(() => {
+        for(let i = 360; i >= 0; i-= 51) { // one circle of bullet
+          for(let n = 0; n <= 7; n++) {
+            setTimeout(() => {addBullet(200, 100, 5, 90 - i - y, 4 - (n / 4), "n")}, n * 80);
+          }
+        }
+      }, y * 100);
+    }
+  }
+}
+
 
 function hTrack(speed, rough) {
   for(let i = 0; i < bullets.length; i++) { // go through all bullets
