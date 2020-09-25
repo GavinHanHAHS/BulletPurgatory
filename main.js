@@ -18,6 +18,14 @@ let player = {
   invincible: false
 }
 
+let hit;
+let finalScore = 0;
+
+let cheats = {
+  konami: false, // 30 lives + 5s invincibility if not invincible rn
+  starman: false
+}
+
 // Bullet array
 let bullets = [];
 
@@ -44,6 +52,7 @@ let bullets = [];
 
 
 let keys = [];
+let code = [];
 let stage = 3;
 
 let x1 = 0;
@@ -51,44 +60,72 @@ let x1 = 0;
 requestAnimationFrame(main);
 
 function main() {
-  ctx.fillStyle = "white";
-  ctx.fillRect(0, 0, cnv.width, cnv.height); // Reset grid drawing to draw next frame
+  if(player.lives > 0) { // if game is running & player is alive
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, cnv.width, cnv.height); // Reset grid drawing to draw next frame
 
-  playerMovement();
-  
-  bulletLogic();
+    playerMovement();
+    
+    bulletLogic();
 
-  collision();
-  
-  if(stage == 0) {
-    stage = -1;
-    if(Math.random() > 0.5) {
-      stage = 1;
-    } else {
-      stage = 2;
+    collision();
+    
+    if(stage == 0) {
+      let rand = Math.random()
+      stage = -1;
+      if(rand > 0.66) {
+        stage = 1;
+      } else if(rand > 0.33) {
+        stage = 2;
+      } else {
+        stage = 3;
+      }
+      console.log("stage change");
     }
-    console.log("stage change");
-  }
 
-  if(player.lives > 0) {
-    player.score += 1;
-    document.getElementById("score").innerHTML = player.score;
+    if(player.lives > 0) {
+      player.score += 1;
+      document.getElementById("score").innerHTML = player.score;
+    }
+    
+    if(code.join() == ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "KeyB", "KeyA"].join()
+    && cheats.konami == false) {
+      console.log("yeet");
+      player.lives = 30;
+      document.getElementById("lives").innerHTML = player.lives;
+      player.invincible = true;
+      if(player.invincible = true) {
+        clearTimeout(hit);
+      }
+      setTimeout(() => {player.invincible = false;}, 5000);
+      cheats.konami = true;
+    } else if(code.join() == ["KeyS", "KeyT", "KeyO", "KeyP", "KeyA", "KeyN", "KeyD", "KeyA", "KeyW", "KeyE"]
+    && cheats.starman == false) {
+      if(player.invincible = true) {
+        clearTimeout(hit);
+      }
+      player.invincible = true;
+      setTimeout(() => {player.invincible = false;}, 30000);
+      cheats.starman = false;
+    }
+
+    // if(stage == 0) {
+    //   stage = -1;
+    //   let rand = Math.random();
+    //   if(rand < 0.5) {
+    //     stage = 1;
+    //   } else {
+    //     stage = 2;
+    //   }
+    // }
+
+    spirals();
+    homeCircles();
+    carousel();
+  } else {
+    gameOver();
   }
   
-
-  // if(stage == 0) {
-  //   stage = -1;
-  //   let rand = Math.random();
-  //   if(rand < 0.5) {
-  //     stage = 1;
-  //   } else {
-  //     stage = 2;
-  //   }
-  // }
-
-  spirals();
-  homeCircles();
-  carousel();
 
   requestAnimationFrame(main);
 }
@@ -172,9 +209,9 @@ function bulletLogic() {
   }
 
   // Draw basic enemy
-  strokeCircle(100, 100, 10);
+  //strokeCircle(100, 100, 10);
 
-  strokeCircle(300, 100, 10);
+  //strokeCircle(300, 100, 10);
 
   
 }
@@ -233,10 +270,14 @@ function collision() {
       if(!player.invincible) {
         console.log("HIT!");
         player.lives -= 1;
-        player.lives = constrain(0, 5, player.lives);
+        if(cheats.konami == true) {
+          player.lives = constrain(0, 30, player.lives);
+        } else {
+          player.lives = constrain(0, 5, player.lives);
+        }
         document.getElementById("lives").innerHTML = player.lives;
         player.invincible = true;
-        setTimeout(() => {player.invincible = false}, 1600);
+        hit = setTimeout(() => {player.invincible = false}, 1800);
       }
       // document.body.style.backgroundColor = "red";
       // setTimeout(() => document.body.style.backgroundColor = "", 20)
@@ -326,10 +367,10 @@ function carousel() {
   if(stage == 3) {
     stage = -1;
     let x1 = 0;
-    setTimeout(() => {stage = 3.5; console.log("right");}, 7000); //reset stage (goes backwards a bit)
+    setTimeout(() => {stage = 3.5; console.log("right");}, 5900); //reset stage (goes backwards a bit)
 
 
-    for(let y = 0; y < 70; y += 3) {
+    for(let y = 0; y < 55; y += 3) {
       setTimeout(() => {
         for(let i = 0; i <= 360; i+= 51) { // one circle of bullet
           for(let n = 0; n <= 7; n++) {
@@ -339,15 +380,16 @@ function carousel() {
       }, y * 100);
     }
 
-    for(let i = 0; i < 400; i += 5) {
+    for(let i = 0; i < 400; i += 5) { // two circles travel across the screen spreading bullets
       setTimeout(() => addBullet(i, 150, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 8);
       setTimeout(() => addBullet(400 - i, 150, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 8);
     }
   }
+
   if(stage == 3.5) {
     stage = -1;
-    setTimeout(() => {stage = 3; console.log("left");}, 7000);
-    for(let y = 0; y < 70; y += 3) {
+    setTimeout(() => {stage = 0; console.log("left");}, 6500);
+    for(let y = 0; y < 55; y += 3) {
       setTimeout(() => {
         for(let i = 360; i >= 0; i-= 51) { // one circle of bullet
           for(let n = 0; n <= 7; n++) {
@@ -355,6 +397,11 @@ function carousel() {
           }
         }
       }, y * 100);
+    }
+
+    for(let i = 0; i < 400; i += 5) { // two circles travel across the screen spreading bullets
+      setTimeout(() => addBullet(i, 550, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 12);
+      setTimeout(() => addBullet(400 - i, 550, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 12);
     }
   }
 }
@@ -375,6 +422,27 @@ function hTrack(speed, rough) {
       bullets[i][5] = speed; // let 'em rip
     }
   }
+}
+
+function gameOver() {
+  ctx.fillStyle = "white";
+  ctx.fillRect(85, 200, 230, 250); // prepare square for drawing over
+
+  ctx.font = "35px Comic Sans MS";
+  ctx.fillStyle = "cadetBlue"
+  ctx.fillText("Game Over!", 105, 270);
+  ctx.font = "15px Comic Sans MS";
+  ctx.fillText("score: ", 175, 300);
+  if(finalScore + 4000 < player.score) {
+    finalScore += 12;
+  } else if(finalScore + 400 < player.score) {
+    finalScore += 3;
+  } else if(finalScore < player.score) {
+    finalScore++;
+  }
+
+  ctx.font = "50px Comic Sans MS";
+  ctx.fillText(finalScore, 150, 380);
 }
 
 // Math Helper Functions
@@ -404,8 +472,14 @@ document.addEventListener("keyup", handleKeyAction);
 
 // When player presses or releases a key add or remove it to an array.
 function handleKeyAction(event) {
-  if(event.type === "keydown" && !keys.includes(event.code)) {
-    keys.push(event.code);
+  if(event.type === "keydown") {
+    if(!keys.includes(event.code)) {
+      keys.push(event.code);
+    }
+    code.push(event.code);
+    if(code.length > 10) {
+      code.shift();
+    }
   }
   if(event.type === "keyup") {
     for(let i = 0; i < keys.length; i++) {
