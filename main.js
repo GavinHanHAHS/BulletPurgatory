@@ -53,7 +53,9 @@ let bullets = [];
 
 let keys = [];
 let code = [];
-let stage = 3;
+let stage = 0;
+
+let colors = ["crimson", "DarkOrange", "Gold", "GreenYellow", "Blue", "Indigo", "Violet"];
 
 let x1 = 0;
 
@@ -185,9 +187,10 @@ function playerMovement() {
 }
 
 function bulletLogic() {
-  ctx.fillStyle = "white"
+  
   // Draw bullets
   for(let i = 0; i < bullets.length; i++) {
+    ctx.fillStyle = bullets[i][7];
     fillCircle(bullets[i][0], bullets[i][1], bullets[i][2]);
     strokeCircle(bullets[i][0], bullets[i][1], bullets[i][2]);
     bullets[i][0] += bullets[i][3] * bullets[i][5];
@@ -225,7 +228,7 @@ function setBulletDirection() {
   }
 }
 
-function addBullet(x, y, r, angle, spd, type) { // n = normal
+function addBullet(x, y, r, angle, spd, type, color) { // n = normal
   let xAngle = 0;                               // h = starts normal, but can be set to target player
   let yAngle = 0;
   if(angle == player) { // angle = at player
@@ -238,14 +241,20 @@ function addBullet(x, y, r, angle, spd, type) { // n = normal
     xAngle = Math.cos(toRadians(angle));
     yAngle = Math.sin(toRadians(angle));
   }
-  bullets.push([x, y, r, xAngle, yAngle, spd, type]);
+
+  if(color == "random") {
+    color = colors[Math.floor(Math.random() * colors.length)];
+    //color = rgb(Math.random() * 255, Math.random() * 255, Math.random() * 255);
+  }
+
+  bullets.push([x, y, r, xAngle, yAngle, spd, type, color]);
 }
 
 function addMultipleBullets(x, y, num) {
   let angle = toDegrees(Math.atan2(player.y - y, player.x - x));
   
   for(let i = 0; i < num; i++) {
-    setTimeout(() => addBullet(x, y, 15, angle, 3, "n"), i * 100);
+    setTimeout(() => addBullet(x, y, 15, angle, 3, "n"), i * 100, "white");
   }
   
 /*  addBullet(x, y, 5, angle, 3);
@@ -295,35 +304,35 @@ function spirals() {
 
     // spirally thingies
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(300, 100, 6, i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(300, 100, 6, i, 3, "n", "random"), i * 10);
     }
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(300, 100, 6, 90 + i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(300, 100, 6, 90 + i, 3, "n", "random"), i * 10);
     }
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(300, 100, 6,  180 + i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(300, 100, 6,  180 + i, 3, "n", "random"), i * 10);
     }
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(300, 100, 6, 270 + i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(300, 100, 6, 270 + i, 3, "n", "random"), i * 10);
     }
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(100, 100, 6, -i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(100, 100, 6, -i, 3, "n", "random"), i * 10);
     }
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(100, 100, 6, 90 - i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(100, 100, 6, 90 - i, 3, "n", "random"), i * 10);
     }
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(100, 100, 6,  180 - i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(100, 100, 6,  180 - i, 3, "n", "random"), i * 10);
     }
     for(let i = 0; i < 360; i += 10) {
-      setTimeout(() => addBullet(100, 100, 6, 270 - i, 3, "n"), i * 10);
+      setTimeout(() => addBullet(100, 100, 6, 270 - i, 3, "n", "random"), i * 10);
     }
 
     //circular thingies
     for(let n = 0; n < 45; n += 5) {
       setTimeout(() => {
         for(let i = 0; i < 360; i += 14) {
-          addBullet(200, 150, 5, i, 3.5, "n");
+          addBullet(200, 150, 5, i, 3.5, "n", "white");
         }
       }, n * 80); 
     }
@@ -331,7 +340,7 @@ function spirals() {
     for(let n = 0; n < 45; n += 5) {
       setTimeout(() => {
         for(let i = 0; i < 360; i += 14) {
-          addBullet(200, 150, 10, i + 7 + n/3, 3, "n");
+          addBullet(200, 150, 10, i + 7 + n/3, 3, "n", "white");
         }
       }, (n * 80) + 180); 
     }
@@ -347,14 +356,14 @@ function homeCircles() {
       setTimeout(() => {
         // one loop
         for(let n = 0; n <= 360; n += 30) { // add two circles of homing bullets
-          addBullet(100, 100, 5, n, 1.25, "h");
+          addBullet(100, 100, 5, n, 1.25, "h", "white");
         }
         for(let n = 0; n <= 360; n += 30) {
-          addBullet(300, 100, 5, n, 1.25, "h");
+          addBullet(300, 100, 5, n, 1.25, "h", "white");
         }
 
         for(let i = 0; i < 10; i++) { // add random bullet fall
-          setTimeout(() => addBullet(Math.random() * cnv.width, 5, 5, 90, Math.random() * 2 + 1, "n"), i * 120);
+          setTimeout(() => addBullet(Math.random() * cnv.width, 5, 5, 90, Math.random() * 2 + 1, "n", "random"), i * 120);
         }
         
         setTimeout(() => hTrack(5.5, true), 750); // set circles to track after x seconds
@@ -374,15 +383,15 @@ function carousel() {
       setTimeout(() => {
         for(let i = 0; i <= 360; i+= 51) { // one circle of bullet
           for(let n = 0; n <= 7; n++) {
-            setTimeout(() => {addBullet(200, 100, 5, 90 - i + y, 4 - (n / 4), "n")}, n * 80);
+            setTimeout(() => {addBullet(200, 100, 5, 90 - i + y, 4 - (n / 4), "n", "random")}, n * 80);
           }
         }
       }, y * 100);
     }
 
     for(let i = 0; i < 400; i += 5) { // two circles travel across the screen spreading bullets
-      setTimeout(() => addBullet(i, 150, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 8);
-      setTimeout(() => addBullet(400 - i, 150, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 8);
+      setTimeout(() => addBullet(i, 150, 8, 90 * (Math.random() * 4), 1.25, "n", "white"), i * 8);
+      setTimeout(() => addBullet(400 - i, 150, 8, 90 * (Math.random() * 4), 1.25, "n", "white"), i * 8);
     }
   }
 
@@ -393,15 +402,15 @@ function carousel() {
       setTimeout(() => {
         for(let i = 360; i >= 0; i-= 51) { // one circle of bullet
           for(let n = 0; n <= 7; n++) {
-            setTimeout(() => {addBullet(200, 100, 5, 90 - i - y, 4 - (n / 4), "n")}, n * 80);
+            setTimeout(() => {addBullet(200, 100, 5, 90 - i - y, 4 - (n / 4), "n", "random")}, n * 80);
           }
         }
       }, y * 100);
     }
 
     for(let i = 0; i < 400; i += 5) { // two circles travel across the screen spreading bullets
-      setTimeout(() => addBullet(i, 550, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 12);
-      setTimeout(() => addBullet(400 - i, 550, 8, 90 * (Math.random() * 4), 1.25, "n"), i * 12);
+      setTimeout(() => addBullet(i, 550, 8, 90 * (Math.random() * 4), 1.25, "n", "white"), i * 12);
+      setTimeout(() => addBullet(400 - i, 550, 8, 90 * (Math.random() * 4), 1.25, "n", "white"), i * 12);
     }
   }
 }
